@@ -43,5 +43,106 @@ namespace RentalGarageSystem
 
             command.ExecuteNonQuery();
         }
+
+        public void AddVehicle(string make, string model, string licensePlate)
+        {
+            using var connection = new SqliteConnection(_connectionString);
+            connection.Open();
+
+            using var command = connection.CreateCommand();
+            command.CommandText = "INSERT INTO Vehicles (Make, Model, LicensePlate) VALUES (@Make, @Model, @LicensePlate)";
+            command.Parameters.AddWithValue("@Make", make);
+            command.Parameters.AddWithValue("@Model", model);
+            command.Parameters.AddWithValue("@LicensePlate", licensePlate);
+
+            command.ExecuteNonQuery();
+        }
+
+        public void AddGarageSlot(int slotNumber, int vehicleId)
+        {
+            using var connection = new SqliteConnection(_connectionString);
+            connection.Open();
+
+            using var command = connection.CreateCommand();
+            command.CommandText = "INSERT INTO GarageSlots (VehicleId, SlotNumber) VALUES (@VehicleId, @SlotNumber)";
+            command.Parameters.AddWithValue("@VehicleId", vehicleId);
+            command.Parameters.AddWithValue("@SlotNumber", slotNumber);
+
+            command.ExecuteNonQuery();
+        }
+
+        public void AddRental(int vehicleId)
+        {
+            using var connection = new SqliteConnection(_connectionString);
+            connection.Open();
+
+            using var command = connection.CreateCommand();
+            command.CommandText = "INSERT INTO Rentals (VehicleId, RentalDate) VALUES (@VehicleId, DATE('now'))";
+            command.Parameters.AddWithValue("@VehicleId", vehicleId);
+
+            command.ExecuteNonQuery();
+        }
+
+        public void EndRental(int rentalId)
+        {
+            using var connection = new SqliteConnection(_connectionString);
+            connection.Open();
+
+            using var command = connection.CreateCommand();
+            command.CommandText = "UPDATE Rentals SET ReturnDate = DATE('now') WHERE Id = @RentalId";
+            command.Parameters.AddWithValue("@RentalId", rentalId);
+
+            command.ExecuteNonQuery();
+        }
+
+        public bool VehicleExists(int vehicleId)
+        {
+            using var connection = new SqliteConnection(_connectionString);
+            connection.Open();
+
+            using var command = connection.CreateCommand();
+            command.CommandText = "SELECT 1 FROM Vehicles WHERE Id = @VehicleId";
+            command.Parameters.AddWithValue("@VehicleId", vehicleId);
+
+            return command.ExecuteScalar() != null;
+        }
+
+        public bool HasActiveRental(int vehicleId)
+        {
+            using var connection = new SqliteConnection(_connectionString);
+            connection.Open();
+
+            using var command = connection.CreateCommand();
+            command.CommandText = "SELECT 1 FROM Rentals WHERE VehicleId = @VehicleId AND ReturnDate IS NULL";
+            command.Parameters.AddWithValue("@VehicleId", vehicleId);
+
+            return command.ExecuteScalar() != null;
+        }
+
+        public bool RentalExists(int rentalId)
+        {
+            using var connection = new SqliteConnection(_connectionString);
+            connection.Open();
+
+            using var command = connection.CreateCommand();
+            command.CommandText = "SELECT 1 FROM Rentals WHERE Id = @RentalId";
+            command.Parameters.AddWithValue("@RentalId", rentalId);
+
+            return command.ExecuteScalar() != null;
+        }
+
+        public bool HasReturnDate(int rentalId)
+        {
+            using var connection = new SqliteConnection(_connectionString);
+            connection.Open();
+
+            using var command = connection.CreateCommand();
+            command.CommandText = "SELECT ReturnDate FROM Rentals WHERE Id = @RentalId";
+            command.Parameters.AddWithValue("@RentalId", rentalId);
+
+            var result = command.ExecuteScalar();
+
+            return result != null && result != DBNull.Value;
+        }
     }
 }
