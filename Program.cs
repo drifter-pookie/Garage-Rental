@@ -13,11 +13,11 @@ namespace RentalGarageSystem
             while (true)
             {
                 Console.WriteLine("1. Add Vehicle");
-                Console.WriteLine("2. List Vehicles");
+                Console.WriteLine("2. Get All Vehicles");
                 Console.WriteLine("3. Add Garage Slot");
-                Console.WriteLine("4. List Garage Slots");
+                Console.WriteLine("4. Get All Garage Slots");
                 Console.WriteLine("5. Add Rental");
-                Console.WriteLine("6. List Rentals");
+                Console.WriteLine("6. Get All Rentals");
                 Console.WriteLine("7. End Rental");
                 Console.WriteLine("8. Exit");
                 Console.Write("Choose an option: ");
@@ -26,25 +26,39 @@ namespace RentalGarageSystem
                 switch (option)
                 {
                     case "1":
-                        databaseHelper.AddVehicle();
+                        Console.Write("Enter vehicle make: ");
+                        var make = Console.ReadLine();
+                        Console.Write("Enter vehicle model: ");
+                        var model = Console.ReadLine();
+                        Console.Write("Enter vehicle license plate: ");
+                        var licensePlate = Console.ReadLine();
+                        databaseHelper.AddVehicle(make, model, licensePlate);
                         break;
                     case "2":
-                        databaseHelper.ListVehicles();
+                        databaseHelper.GetAllVehicles();
                         break;
                     case "3":
-                        databaseHelper.AddGarageSlot();
+                        Console.Write("Enter garage slot number: ");
+                        var slotNumber = int.Parse(Console.ReadLine());
+                        Console.Write("Enter vehicle id: ");
+                        var vehicleId = int.Parse(Console.ReadLine());
+                        databaseHelper.AddGarageSlot(slotNumber, vehicleId);
                         break;
                     case "4":
-                        databaseHelper.ListGarageSlots();
+                        databaseHelper.GetAllGarageSlots();
                         break;
                     case "5":
-                        databaseHelper.AddRental();
+                        Console.Write("Enter vehicle id: ");
+                        var rentalVehicleId = int.Parse(Console.ReadLine());
+                        databaseHelper.AddRental(rentalVehicleId);
                         break;
                     case "6":
-                        databaseHelper.ListRentals();
+                        databaseHelper.GetAllRentals();
                         break;
                     case "7":
-                        databaseHelper.EndRental();
+                        Console.Write("Enter rental id: ");
+                        var rentalId = int.Parse(Console.ReadLine());
+                        databaseHelper.EndRental(rentalId);
                         break;
                     case "8":
                         return;
