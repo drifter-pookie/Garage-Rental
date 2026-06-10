@@ -218,7 +218,7 @@ namespace RentalGarageSystem
                     Id = reader.GetInt32(0),
                     VehicleId = reader.GetInt32(1),
                     RentalDate = reader.GetDateTime(2),
-                    ReturnDate = reader.IsDBNull(3) ? (DateTime?)null : reader.GetDateTime(3)
+                    ReturnDate = reader.IsDBNull(3) ? DateTime.MinValue : reader.GetDateTime(3)
                 };
                 rentals.Add(rental);
             }

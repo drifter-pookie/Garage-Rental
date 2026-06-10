@@ -7,6 +7,6 @@ namespace RentalGarageSystem
         public int Id { get; set; }
         public int VehicleId { get; set; }
         public DateTime RentalDate { get; set; }
-        public DateTime ReturnDate { get; set; }
+        public DateTime? ReturnDate { get; set; }
     }
 }
