@@ -1,72 +1,40 @@
-using System;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using RentalGarageSystem;
 
-namespace RentalGarageSystem
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+builder.Services.AddRazorPages();
+builder.Services.AddServerSideBlazor();
+
+// Register DatabaseHelper as a singleton service with the connection string.
+builder.Services.AddSingleton<DatabaseHelper>(provider => new DatabaseHelper("Data Source=rentalgarage.db"));
+
+var app = builder.Build();
+
+// Ensure the database is initialized at startup.
+using (var scope = app.Services.CreateScope())
 {
-    class Program
-    {
-        static void Main(string[] args)
-        {
-            var connectionString = "Data Source=rentalgarage.db";
-            var databaseHelper = new DatabaseHelper(connectionString);
-            databaseHelper.InitializeDatabase();
-
-            while (true)
-            {
-                Console.WriteLine("1. Add Vehicle");
-                Console.WriteLine("2. Get All Vehicles");
-                Console.WriteLine("3. Add Garage Slot");
-                Console.WriteLine("4. Get All Garage Slots");
-                Console.WriteLine("5. Add Rental");
-                Console.WriteLine("6. Get All Rentals");
-                Console.WriteLine("7. End Rental");
-                Console.WriteLine("8. Exit");
-                Console.Write("Choose an option: ");
-                var option = Console.ReadLine();
-
-                switch (option)
-                {
-                    case "1":
-                        Console.Write("Enter vehicle make: ");
-                        var make = Console.ReadLine();
-                        Console.Write("Enter vehicle model: ");
-                        var model = Console.ReadLine();
-                        Console.Write("Enter vehicle license plate: ");
-                        var licensePlate = Console.ReadLine();
-                        databaseHelper.AddVehicle(make, model, licensePlate);
-                        break;
-                    case "2":
-                        databaseHelper.GetAllVehicles();
-                        break;
-                    case "3":
-                        Console.Write("Enter vehicle id: ");
-                        var vehicleId = int.Parse(Console.ReadLine());
-                        Console.Write("Enter garage slot number: ");
-                        var slotNumber = int.Parse(Console.ReadLine());
-                        databaseHelper.AddGarageSlot(slotNumber, vehicleId);
-                        break;
-                    case "4":
-                        databaseHelper.GetAllGarageSlots();
-                        break;
-                    case "5":
-                        Console.Write("Enter vehicle id: ");
-                        var rentalVehicleId = int.Parse(Console.ReadLine());
-                        databaseHelper.AddRental(rentalVehicleId);
-                        break;
-                    case "6":
-                        databaseHelper.GetAllRentals();
-                        break;
-                    case "7":
-                        Console.Write("Enter rental id: ");
-                        var rentalId = int.Parse(Console.ReadLine());
-                        databaseHelper.EndRental(rentalId);
-                        break;
-                    case "8":
-                        return;
-                    default:
-                        Console.WriteLine("Invalid option. Please choose a valid option.");
-                        break;
-                }
-            }
-        }
-    }
+    var dbHelper = scope.ServiceProvider.GetRequiredService<DatabaseHelper>();
+    dbHelper.InitializeDatabase();
 }
+
+// Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Error");
+    // The default HSTS value is 30 days. You may want to change this for production scenarios.
+    app.UseHsts();
+}
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+app.UseRouting();
+
+app.MapBlazorHub();
+app.MapFallbackToPage("/_Host");
+
+app.Run();

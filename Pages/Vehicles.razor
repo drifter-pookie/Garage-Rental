@@ -1,0 +1,73 @@
+@page "/vehicles"
+@using RentalGarageSystem
+@inject DatabaseHelper DatabaseHelper
+
+<h3>Vehicles</h3>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Make</th>
+            <th>Model</th>
+            <th>License Plate</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var vehicle in vehicles)
+        {
+            <tr>
+                <td>@vehicle.Id</td>
+                <td>@vehicle.Make</td>
+                <td>@vehicle.Model</td>
+                <td>@vehicle.LicensePlate</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h4>Add New Vehicle</h4>
+<EditForm Model="newVehicle" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="mb-3">
+        <label class="form-label">Make</label>
+        <InputText @bind-Value="newVehicle.Make" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Model</label>
+        <InputText @bind-Value="newVehicle.Model" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">License Plate</label>
+        <InputText @bind-Value="newVehicle.LicensePlate" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Add Vehicle</button>
+</EditForm>
+
+@code {
+    private List<Vehicle> vehicles = new();
+    private Vehicle newVehicle = new();
+
+    protected override void OnInitialized()
+    {
+        LoadVehicles();
+    }
+
+    private void LoadVehicles()
+    {
+        vehicles = DatabaseHelper.GetAllVehicles();
+    }
+
+    private void HandleValidSubmit()
+    {
+        // Add the new vehicle to the database.
+        DatabaseHelper.AddVehicle(newVehicle.Make, newVehicle.Model, newVehicle.LicensePlate);
+
+        // Reset the form.
+        newVehicle = new Vehicle();
+
+        // Refresh the vehicle list.
+        LoadVehicles();
+    }
+}
