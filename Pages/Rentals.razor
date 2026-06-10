@@ -1,0 +1,85 @@
+@page "/rentals"
+@using RentalGarageSystem
+@using Microsoft.AspNetCore.Components.Forms
+@inject DatabaseHelper DatabaseHelper
+
+<h3>Rentals</h3>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Vehicle Id</th>
+            <th>Rental Date</th>
+            <th>Return Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var rental in rentals)
+        {
+            <tr>
+                <td>@rental.Id</td>
+                <td>@rental.VehicleId</td>
+                <td>@rental.RentalDate.ToShortDateString()</td>
+                <td>@(rental.ReturnDate.HasValue ? rental.ReturnDate.Value.ToShortDateString() : "")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h4>Add New Rental</h4>
+<EditForm Model="newRental" OnValidSubmit="HandleAddRental">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="mb-3">
+        <label class="form-label">Vehicle Id</label>
+        <InputNumber @bind-Value="newRental.VehicleId" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Add Rental</button>
+</EditForm>
+
+<h4>End Rental</h4>
+<EditForm Model="endRentalModel" OnValidSubmit="HandleEndRental">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="mb-3">
+        <label class="form-label">Rental Id</label>
+        <InputNumber @bind-Value="endRentalModel.RentalId" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-danger">End Rental</button>
+</EditForm>
+
+@code {
+    private List<Rental> rentals = new();
+    private Rental newRental = new();
+    private EndRentalModel endRentalModel = new();
+
+    protected override void OnInitialized()
+    {
+        LoadRentals();
+    }
+
+    private void LoadRentals()
+    {
+        rentals = DatabaseHelper.GetAllRentals();
+    }
+
+    private void HandleAddRental()
+    {
+        DatabaseHelper.AddRental(newRental.VehicleId);
+        newRental = new Rental();
+        LoadRentals();
+    }
+
+    private void HandleEndRental()
+    {
+        DatabaseHelper.EndRental(endRentalModel.RentalId);
+        endRentalModel = new EndRentalModel();
+        LoadRentals();
+    }
+
+    private class EndRentalModel
+    {
+        public int RentalId { get; set; }
+    }
+}

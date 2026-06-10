@@ -1,0 +1,63 @@
+@page "/garageslots"
+@using RentalGarageSystem
+@using Microsoft.AspNetCore.Components.Forms
+@inject DatabaseHelper DatabaseHelper
+
+<h3>Garage Slots</h3>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Vehicle Id</th>
+            <th>Slot Number</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var slot in garageSlots)
+        {
+            <tr>
+                <td>@slot.Id</td>
+                <td>@slot.VehicleId</td>
+                <td>@slot.SlotNumber</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h4>Add New Garage Slot</h4>
+<EditForm Model="newSlot" OnValidSubmit="HandleAddSlot">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="mb-3">
+        <label class="form-label">Vehicle Id</label>
+        <InputNumber @bind-Value="newSlot.VehicleId" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Slot Number</label>
+        <InputNumber @bind-Value="newSlot.SlotNumber" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Add Slot</button>
+</EditForm>
+
+@code {
+    private List<GarageSlot> garageSlots = new();
+    private GarageSlot newSlot = new();
+
+    protected override void OnInitialized()
+    {
+        LoadSlots();
+    }
+
+    private void LoadSlots()
+    {
+        garageSlots = DatabaseHelper.GetAllGarageSlots();
+    }
+
+    private void HandleAddSlot()
+    {
+        DatabaseHelper.AddGarageSlot(newSlot.SlotNumber, newSlot.VehicleId);
+        newSlot = new GarageSlot();
+        LoadSlots();
+    }
+}
