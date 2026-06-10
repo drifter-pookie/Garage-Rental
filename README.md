@@ -125,8 +125,8 @@ The system is built around four core classes:
 
 ## 👨‍💻 Author
 
-**Abdul Nafay Sarmad**
-GitHub: [@AbdulNafaySarmad1](https://github.com/AbdulNafaySarmad1)
+**Sonia Shaikh**
+GitHub: [@drifter-pookie](https://github.com/drifter-pookie)
 
 ---
 
