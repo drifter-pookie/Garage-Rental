@@ -38,10 +38,10 @@ namespace RentalGarageSystem
                         databaseHelper.GetAllVehicles();
                         break;
                     case "3":
-                        Console.Write("Enter garage slot number: ");
-                        var slotNumber = int.Parse(Console.ReadLine());
                         Console.Write("Enter vehicle id: ");
                         var vehicleId = int.Parse(Console.ReadLine());
+                        Console.Write("Enter garage slot number: ");
+                        var slotNumber = int.Parse(Console.ReadLine());
                         databaseHelper.AddGarageSlot(slotNumber, vehicleId);
                         break;
                     case "4":
